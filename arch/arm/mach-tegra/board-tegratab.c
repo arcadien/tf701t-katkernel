@@ -700,8 +700,10 @@ static int __init tegratab_touch_init(void)
 {
 	struct board_info board_info;
 
+#ifdef CONFIG_ANDROID
 	if (get_androidboot_mode_charger())
 		return 0;
+#endif
 
 	tegra_get_board_info(&board_info);
 

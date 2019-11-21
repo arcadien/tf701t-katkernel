@@ -621,9 +621,11 @@ int __init tegratab_palmas_regulator_init(void)
 				ARRAY_SIZE(tegratab_palmas_clk32k_idata);
 	}
 
+#ifdef CONFIG_ANDROID
 	if (get_androidboot_mode_charger())
 		palmas_pdata.long_press_delay =
 				PALMAS_LONG_PRESS_KEY_TIME_12SECONDS;
+#endif
 
 	i2c_register_board_info(4, palma_device,
 			ARRAY_SIZE(palma_device));
@@ -781,8 +783,12 @@ int __init tegratab_regulator_init(void)
 int __init tegratab_power_off_init(void)
 {
 	/* Use PMU reset only when battery is exist and not charger mode. */
+#ifdef CONFIG_ANDROID
 	if ((get_power_supply_type() == POWER_SUPPLY_TYPE_BATTERY) &&
 		(!get_androidboot_mode_charger()))
+#else
+	if (get_power_supply_type() == POWER_SUPPLY_TYPE_BATTERY)
+#endif
 		pm_power_off = palmas_reset;
 
 	return 0;
