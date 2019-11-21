@@ -428,7 +428,7 @@ static void tegra_cache_smc(bool enable, u32 arg)
 	cpumask_t saved_cpu_mask;
 	unsigned long flags;
 	long ret;
-
+	unsigned long real_start, real_size;
 	/*
 	 * ISSUE : Some registers of PL310 controler must be written
 	 *              from Secure context (and from CPU0)!
@@ -1702,8 +1702,10 @@ void __init tegra_ram_console_debug_reserve(unsigned long ram_console_size)
 	ram.descs->size = ram_console_size;
 
 	INIT_LIST_HEAD(&ram.node);
-
-	ret = persistent_ram_early_init(&ram);
+        real_start = res->start - SZ_1M;
+	real_size = ram_console_size + SZ_1M;
+	ret = memblock_remove(real_start, real_size);
+#	ret = persistent_ram_early_init(&ram);
 	if (ret)
 		goto fail;
 
